@@ -1,0 +1,16 @@
+{
+    "name": "kevinlangleyjr/wp-media-categories",
+    "description": "Adds a custom taxononomy (media-categories) Media Categories to the WordPress Media Library",
+    "keywords": ["wordpress", "media", "taxonomy", "category"],
+    "license": "GPLv2+",
+    "authors": [
+        {
+            "name": "Kevin Langley Jr.",
+            "email": "me@kevinlangleyjr.com"
+        }
+    ],
+    "type": "wordpress-plugin",
+    "autoload": {
+        "files": ["wp-media-categories.php"]
+    }
+}
