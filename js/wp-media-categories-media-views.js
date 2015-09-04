@@ -46,7 +46,7 @@
 					priority: -70,
 					taxonomy: 'media-category',
 					terms: WP_Media_Categories.terms,
-					listTitle: 'View All Media Categories',
+					listTitle: 'View all media categories',
 					className: 'wp-media-categories-filter attachment-media-category-filter attachment-filters'
 				}).render() );
 			}

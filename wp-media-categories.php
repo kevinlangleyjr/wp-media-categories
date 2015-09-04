@@ -62,16 +62,16 @@ class WP_Media_Categories {
 			$args = array(
 				'taxonomy'        => self::TAXONOMY,
 				'name'            => self::TAXONOMY,
-				'show_option_all' => __( 'View all categories' ),
+				'show_option_all' => __( 'View all media categories' ),
 				'hide_empty'      => false,
 				'hierarchical'    => true,
 				'orderby'         => 'name',
 				'show_count'      => false,
-				'value'           => 'slug'
+				'value_field'     => 'slug'
 			);
 
-			if ( isset( $_GET['media_category'] ) && '' != $_GET['media_category'] ) {
-				$args['selected'] = sanitize_text_field( $_GET['media_category'] );
+			if ( isset( $_GET['media-category'] ) && '' != $_GET['media-category'] ) {
+				$args['selected'] = sanitize_text_field( $_GET['media-category'] );
 			}
 
 			wp_dropdown_categories( $args );
