@@ -39,11 +39,11 @@
 
 			wpAttachmentsBrowser.prototype.createToolbar.apply(this,arguments);
 
-			if( WP_Media_Categories.terms && this.options.filters ){
+			if( WP_Media_Categories.terms ){
 				this.toolbar.set( 'media-category-filter', new media.view.AttachmentFilters.Taxonomy({
 					controller: this.controller,
 					model: this.collection.props,
-					priority: -50,
+					priority: -70,
 					taxonomy: 'media-category',
 					terms: WP_Media_Categories.terms,
 					listTitle: 'View All Media Categories',

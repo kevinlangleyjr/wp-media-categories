@@ -13,11 +13,13 @@ require_once __DIR__ . '/inc/Walker_WP_Media_Taxonomy_Checklist.php';
 class WP_Media_Categories {
 
 	CONST TAXONOMY = 'media-category';
+	CONST VERSION = '0.0.2';
 
 	static function init() {
 		self::register_taxonomy();
 
-		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_scripts' ) );
+		add_action( 'customize_controls_enqueue_scripts', array( __CLASS__, 'enqueue_scripts' ) );
 		add_action( 'restrict_manage_posts', array( __CLASS__, 'add_category_dropdown' ) );
 		add_action( 'wp_ajax_save-attachment-compat', array( __CLASS__, 'ajax_save_attachment_compat' ) );
 
@@ -26,7 +28,7 @@ class WP_Media_Categories {
 		add_filter( 'ajax_query_attachments_args', array( __CLASS__, 'filter_ajax_query_attachments_args' ) );
 	}
 
-	static function admin_enqueue_scripts() {
+	static function enqueue_scripts() {
 
 		if ( wp_script_is( 'media-editor' ) ) {
 
@@ -37,7 +39,8 @@ class WP_Media_Categories {
 
 			$terms = wp_list_pluck( $terms, 'name', 'term_id' );
 
-			wp_enqueue_script( 'wp-media-categories-media-views', plugins_url( 'js/wp-media-categories-media-views.js', __FILE__ ), array( 'media-views' ), '0.0.1', true );
+			wp_enqueue_style( 'wp-media-categories-media-views', plugins_url( 'css/wp-media-categories-media-views.css', __FILE__ ), false, self::VERSION );
+			wp_enqueue_script( 'wp-media-categories-media-views', plugins_url( 'js/wp-media-categories-media-views.js', __FILE__ ), array( 'media-views' ), self::VERSION, true );
 
 			wp_localize_script( 'wp-media-categories-media-views', 'WP_Media_Categories', array(
 				'terms' => $terms
@@ -90,25 +93,18 @@ class WP_Media_Categories {
 
 		$values = wp_list_pluck( $terms, 'term_id' );
 
-		// unfortunately we need to get the terms checklist via an output buffer
-		//  because there is no way to just return the html...
-		//  submitting trac ticket to allow for return of html
-		ob_start();
-
-		wp_terms_checklist( $post->ID, array(
+		$output = wp_terms_checklist( $post->ID, array(
 			'taxonomy' => self::TAXONOMY,
 			'checked_ontop' => false,
-			'walker' => new Walker_WP_Media_Taxonomy_Checklist( $post->ID )
+			'walker' => new Walker_WP_Media_Taxonomy_Checklist( $post->ID ),
+			'echo' => false
 		) );
 
-		wp_nonce_field( 'save_attachment_media_categories', 'media_category_nonce', false );
-
-		$checklist = ob_get_clean();
-
-		if( !empty( $checklist ) ) {
-			$html = '<ul class="term-list">' . $checklist . '</ul>';
+		if( !empty( $output ) ) {
+			$output = '<ul class="term-list">' . $output . '</ul>';
+			$output .= wp_nonce_field( 'save_attachment_media_categories', 'media_category_nonce', false, false );
 		} else {
-			$html = '<ul class="term-list"><li>No ' . $taxonomy_obj['label'] . '</li></ul>';
+			$output = '<ul class="term-list"><li>No ' . $taxonomy_obj['label'] . '</li></ul>';
 		}
 
 		$field = array(
@@ -116,7 +112,7 @@ class WP_Media_Categories {
 			'value' => join(', ', $values),
 			'show_in_edit' => false,
 			'input' => 'html',
-			'html' => $html
+			'html' => $output
 		);
 
 		$form_fields[self::TAXONOMY] = $field;
