@@ -13,7 +13,7 @@ require_once __DIR__ . '/inc/Walker_WP_Media_Taxonomy_Checklist.php';
 class WP_Media_Categories {
 
 	CONST TAXONOMY = 'media-category';
-	CONST VERSION = '0.0.2';
+	CONST VERSION = '0.0.4';
 
 	static function init() {
 		self::register_taxonomy();
@@ -93,12 +93,15 @@ class WP_Media_Categories {
 
 		$values = wp_list_pluck( $terms, 'term_id' );
 
-		$output = wp_terms_checklist( $post->ID, array(
+		ob_start();
+
+		wp_terms_checklist( $post->ID, array(
 			'taxonomy' => self::TAXONOMY,
 			'checked_ontop' => false,
-			'walker' => new Walker_WP_Media_Taxonomy_Checklist( $post->ID ),
-			'echo' => false
+			'walker' => new Walker_WP_Media_Taxonomy_Checklist( $post->ID )
 		) );
+
+		$output = ob_get_clean();
 
 		if( !empty( $output ) ) {
 			$output = '<ul class="term-list">' . $output . '</ul>';
